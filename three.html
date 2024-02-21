@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenGL Blend Modes</title>
+    <style>
+        body { margin: 0; font-family: Segoe UI, sans-serif; }
+        canvas { display: block; }
+        .controls { position: absolute; top: 10px; left: 10px; }
+        .control-group { margin-bottom: 10px; }
+        .control-label { }
+        .control-table { display: table; }
+        .control-row { display: table-row; }
+        .control-cell { display: table-cell; padding-right: 10px; }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <table>
+             <tr> 
+                <td>
+                    <label for="blending" class="control-label">Blend Mode:</label>
+                </td>
+                <td>
+                    <select id="blending">
+                        <option value="0">NoBlending</option>
+                        <option value="1">NormalBlending</option>
+                        <option value="2">AdditiveBlending</option>
+                        <option value="3">SubtractiveBlending</option>
+                        <option value="4">MultiplyBlending</option>
+                        <option value="5" selected>CustomBlending</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="texture1Input" class="control-label">Texture 1:</label>
+                </td>
+                <td>
+                    <input type="file" id="texture1Input" accept=".png">
+                </td>
+             </tr>
+            <tr>
+                <td>
+                    <label for="texture2Input" class="control-label">Texture 2:</label>
+                </td>
+                <td>
+                    <input type="file" id="texture2Input" accept=".png">
+                </td>
+            </tr>
+            
+            <!-- blend source -->
+
+            <!-- 
+               Source Factors
+            
+               THREE.ZeroFactor 
+               THREE.OneFactor 
+               THREE.SrcColorFactor
+               THREE.OneMinusSrcColorFactor 
+               THREE.SrcAlphaFactor
+               THREE.OneMinusSrcAlphaFactor 
+               THREE.DstAlphaFactor
+               THREE.OneMinusDstAlphaFactor 
+               THREE.DstColorFactor
+               THREE.OneMinusDstColorFactor 
+               THREE.SrcAlphaSaturateFactor
+               THREE.ConstantColorFactor
+               THREE.OneMinusConstantColorFactor
+               THREE.ConstantAlphaFactor
+               THREE.OneMinusConstantAlphaFactor
+               
+               https://github.com/mrdoob/three.js/blob/master/src/constants.js
+            -->
+            
+            <tr>
+                <td>
+                    <label for="blendSrcInput" class="control-label">Blend Source:</label>
+                </td>
+                <td>
+                    <select id="blendSrcInput">
+                        <option value="201">ZeroFactor</option>
+                        <option value="202">OneFactor</option>
+                        <option value="203">SrcColorFactor</option>
+                        <option value="204">OneMinusSrcColorFactor</option>
+                        <option value="205" selected>SrcAlphaFactor</option>
+                        <option value="206">OneMinusSrcAlphaFactor</option>
+                        <option value="207">DstAlphaFactor</option>
+                        <option value="208">DstColorFactor</option>
+                        <option value="209">OneMinusDstColorFactor</option>                        
+                        <option value="210">SrcAlphaSaturateFactor</option>                        
+                        <option value="211">ConstantColorFactor</option>                        
+                        <option value="212">OneMinusConstantColorFactor</option>                        
+                        <option value="213">ConstantAlphaFactor</option>                        
+                        <option value="214">OneMinusConstantAlphaFactor</option>                        
+                    </select>
+                </td>
+             </tr>
+             
+            <!--
+            <tr>
+                <td>
+                    <label for="blendSrcAlphaInput" class="control-label">Blend Source Alpha:</label>
+                </td>
+                <td>
+                    <input type="number" id="blendSrcAlphaInput" value="">
+                </td>
+            </tr>
+            -->
+
+            <!-- blend destination -->
+
+            <tr>
+                <td>
+                    <label for="blendDstInput" class="control-label">Blend Destination:</label>
+                </td>
+                <td>
+                    <select id="blendDstInput">
+                        <option value="200">ZeroFactor</option> <!-- selected -->
+                        <option value="201">OneFactor</option>
+                        <option value="202">SrcColorFactor</option>
+                        <option value="203" selected>OneMinusSrcColorFactor</option>
+                        <option value="204">SrcAlphaFactor</option>
+                        <option value="205">OneMinusSrcAlphaFactor</option>
+                        <option value="206">DstAlphaFactor</option>
+                        <option value="207">OneMinusDstAlphaFactor</option>
+                        <option value="208">DstColorFactor</option>
+                        <option value="209">OneMinusDstColorFactor</option>
+                        <option value="211">ConstantColorFactor</option>
+                        <option value="212">OneMinusConstantColorFactor</option>
+                        <option value="213">ConstantAlphaFactor</option>
+                        <option value="214">OneMinusConstantAlphaFactor</option>
+                    </select>
+                </td>
+             </tr>
+
+            <!--
+            <tr>
+                <td>
+                    <label for="blendDstAlphaInput" class="control-label">Blend Destination Alpha:</label>
+                </td>
+                <td>
+                    <input type="number" id="blendDstAlphaInput" value="">
+                </td>
+            </tr>
+            -->
+
+            <!--
+            
+            <tr>
+                <td>
+                    <label for="blendAlphaInput" class="control-label">Blend Alpha:</label>
+                </td>
+                <td>
+                    <input type="number" id="blendAlphaInput" value="0">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="blendColorInput" class="control-label">Blend Color:</label>
+                </td>
+                <td>
+                    <input type="color" id="blendColorInput" value="#000000">
+                </td>
+            </tr>
+            
+            -->
+            
+
+            <tr>
+                <td>
+                    <label for="blendEquationInput" class="control-label">Blend Equation:</label>
+                </td>
+                <td>
+                    <select id="blendEquationInput">
+                        <option value="100" selected>AddEquation</option>
+                        <option value="101">SubtractEquation</option>
+                        <option value="102">ReverseSubtractEquation</option>
+                        <option value="103">MinEquation</option>
+                        <option value="104">MaxEquation</option>
+                    </select>
+                </td>
+                
+                <!--
+                     export const AddEquation = 100;
+                     export const SubtractEquation = 101;
+                     export const ReverseSubtractEquation = 102;
+                     export const MinEquation = 103;
+                     export const MaxEquation = 104;
+                -->
+            </tr>
+            
+            <!--
+            <tr>
+                <td>
+                    <label for="blendEquationAlphaInput" class="control-label">Blend Equation Alpha:</label>
+                </td>
+                <td>
+                    <input type="number" id="blendEquationAlphaInput" value="">
+                </td>
+            </tr>
+            -->
+
+
+        </table>
+        <!-- <button id="applyChangesButton">Apply Changes</button> -->
+    </div>
+    
+    <!--
+
+glBlendFunc
+glBlendFuncSeparate
+
+glEquationFunc
+glBlendEquationSeparate
+
+Source (foreground)
+GL_SRC_ALPHA
+GL_SRC_ALPHA
+
+Destination (background)
+GL_ONE_MINUS_SRC_ALPHA
+GL_ONE_MINUS_SRC_ALPHA
+
+glEquationFunc
+GL_FUNC_ADD
+GL_FUNC_ADD
+
+GL_ONE
+
+sR * 1 + dR (1-sA) = rR
+sG * 1 + dG (1-sA) = rG
+SB * 1 + dB (1-sA) = rB
+Sa * 1 + dA (1-sA) = rA
+
+Blend Source Alpha
+Blend Destination Alpha:
+Blend Equation Alpha
+Blend Color
+
+
+https://threejs.org/docs/#api/en/materials/Material
+
+
+.blendSrcAlpha : Integer
+The transparency of the .blendSrc. Uses .blendSrc value if null. Default is null.
+
+.blendDstAlpha : Integer
+The transparency of the .blendDst. Uses .blendDst value if null. Default is null.
+
+.blendEquationAlpha : Integer
+The transparency of the .blendEquation. Uses .blendEquation value if null. Default is null.
+
+.blending : Blending
+Which blending to use when displaying objects with this material.
+This must be set to CustomBlending to use custom blendSrc, blendDst or blendEquation.
+See the blending mode constants for all possible values. Default is NormalBlending.
+
+-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Create the scene
+      const scene = new THREE.Scene();
+
+      // Create camera
+      const aspectRatio = window.innerWidth / window.innerHeight;
+      const cameraWidth = 3;
+      const cameraHeight = cameraWidth / aspectRatio;
+      const camera = new THREE.OrthographicCamera(
+          -cameraWidth / 2, cameraWidth / 2,
+          cameraHeight / 2, -cameraHeight / 2,
+          0.1, 1000
+      );
+      camera.position.z = 2;
+
+      // Create renderer
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x808080); // Grey color
+      document.body.appendChild(renderer.domElement);
+
+      // Default textures
+      const loader = new THREE.TextureLoader();
+      let texture1, texture2, texture3;
+      texture1 = loader.load('1.png');
+      texture2 = loader.load('2.png');
+      texture3 = loader.load('2.png');
+
+      // Create materials
+      let material1 = new THREE.MeshBasicMaterial({ map: texture1 });
+      let material2 = new THREE.MeshBasicMaterial({ map: texture2 });
+      let material3 = new THREE.MeshBasicMaterial({ map: texture1 });
+      let material4 = new THREE.MeshBasicMaterial({ map: texture2 });
+
+      // Create geometries
+      const geometry = new THREE.PlaneGeometry(1, 1);
+
+      // Create meshes
+      let mesh1, mesh2, mesh3, mesh4;
+
+      function createMeshes() {
+          mesh1 = new THREE.Mesh(geometry, material1);
+          mesh1.position.x = -1.0;
+          scene.add(mesh1);
+
+          mesh2 = new THREE.Mesh(geometry, material2);
+          mesh2.position.x = -0.0;
+          scene.add(mesh2);
+
+          mesh3 = new THREE.Mesh(geometry, material3);
+          mesh3.position.x = 1.0;
+          scene.add(mesh3);
+
+          mesh4 = new THREE.Mesh(geometry, material4);
+          mesh4.position.x = 1.0;
+          scene.add(mesh4);
+      }
+
+      // Function to update material properties
+      function updateMaterialProperties() {
+          const blending = parseInt(document.getElementById('blending').value);
+          const blendEquation = parseInt(document.getElementById('blendEquationInput').value);
+          const blendSrc = parseInt(document.getElementById('blendSrcInput').value);
+          const blendDst = parseInt(document.getElementById('blendDstInput').value);
+
+          material3.blending = blending;
+          material3.blendSrc = blendSrc;
+          material3.blendDst = blendDst;
+          material3.blendEquation = blendEquation;
+
+          material4.blending = blending;
+          material4.blendSrc = blendSrc;
+          material4.blendDst = blendDst;
+          material4.blendEquation = blendEquation;
+
+          console.log("Material properties updated successfully.");
+      }
+
+      // Reload texture when file input changes
+      function reloadTexture(inputId, texture) {
+          document.getElementById(inputId).addEventListener('change', function(event) {
+              const file = event.target.files[0];
+              const reader = new FileReader();
+              reader.onload = function() {
+                  texture.image.src = reader.result;
+                  texture.needsUpdate = true;
+              };
+              reader.readAsDataURL(file);
+          });
+      }
+
+      // Reload textures when file inputs change
+      reloadTexture('texture1Input', texture1);
+      reloadTexture('texture2Input', texture2);
+
+      document.getElementById('blending').addEventListener('change', updateMaterialProperties);
+      document.getElementById('blendSrcInput').addEventListener('change', updateMaterialProperties);
+      document.getElementById('blendDstInput').addEventListener('change', updateMaterialProperties);
+      document.getElementById('blendEquationInput').addEventListener('change', updateMaterialProperties);
+
+
+      // Render loop
+      function animate() {
+          requestAnimationFrame(animate);
+          renderer.render(scene, camera);
+      }
+
+      createMeshes();
+      animate();
+    </script>
+</body>
+</html>
