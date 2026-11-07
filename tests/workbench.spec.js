@@ -158,3 +158,80 @@ test("code exploration survives a missing renderer", async ({ page }) => {
   await expect(page.locator("#code")).toContainText("GL_SRC_ALPHA, GL_ONE");
   await expect(page.locator("#download")).toBeDisabled();
 });
+
+test("language output follows blend settings and copies the selected snippet", async ({
+  page,
+}) => {
+  const code = page.locator("#code");
+  for (const [language, enable, alpha, disable] of [
+    [
+      "cpp",
+      "glEnable(GL_BLEND);",
+      "GL_ONE, GL_ONE_MINUS_SRC_ALPHA",
+      "glDisable(GL_BLEND);",
+    ],
+    [
+      "rust",
+      "gl::Enable(gl::BLEND);",
+      "gl::ONE, gl::ONE_MINUS_SRC_ALPHA",
+      "gl::Disable(gl::BLEND);",
+    ],
+    [
+      "python",
+      "GL.glEnable(GL.GL_BLEND)",
+      "GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA",
+      "GL.glDisable(GL.GL_BLEND)",
+    ],
+  ]) {
+    await page.selectOption("#preset", "normal");
+    await page.selectOption("#code-language", language);
+    await expect(code).toContainText(enable);
+    await expect(code).toContainText(alpha);
+    if (language === "rust") await expect(code).toContainText("unsafe {");
+    if (language === "python")
+      await expect(code).toContainText("from OpenGL import GL");
+    await page.locator("#opacity").fill("37");
+    await expect(code).toContainText("color.a *= 0.37;");
+    await page.selectOption("#equation", "ReverseSubtractEquation");
+    await expect(code).toContainText(
+      language === "rust"
+        ? "gl::FUNC_REVERSE_SUBTRACT"
+        : "GL_FUNC_REVERSE_SUBTRACT",
+    );
+    await page.selectOption("#source-factor", "DstAlphaFactor");
+    await expect(code).toContainText(
+      language === "rust" ? "gl::DST_ALPHA" : "GL_DST_ALPHA",
+    );
+    await page.selectOption("#equation", "MinEquation");
+    await expect(code).toContainText(
+      language === "rust" ? "gl::MIN" : "GL_MIN",
+    );
+    await page.selectOption("#preset", "replace");
+    await expect(code).toContainText(disable);
+    await expect(code).not.toContainText("BlendFuncSeparate");
+  }
+  await page.selectOption("#preset", "additive");
+  await page.selectOption("#code-language", "rust");
+  await expect(page.locator("#source-factor")).toHaveValue("SrcAlphaFactor");
+  await expect(page.locator("#destination-factor")).toHaveValue("OneFactor");
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (text) => {
+          window.copiedSnippet = text;
+        },
+      },
+    });
+  });
+  await page.click("#copy");
+  expect(await page.evaluate(() => window.copiedSnippet)).toBe(
+    await code.textContent(),
+  );
+  await page.setViewportSize({ width: 320, height: 900 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});

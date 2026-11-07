@@ -13,7 +13,7 @@ A visual playground for understanding how OpenGL blend factors and equations com
 - Experiment with named source/destination factors and add, subtract, reverse subtract, minimum, and maximum equations.
 - Replace either texture with a local PNG, JPEG, or WebP, and swap the layers instantly.
 - Change source opacity and the canvas background, then save the preview as a PNG.
-- Follow the live RGB equation and copy the corresponding OpenGL calls.
+- Follow the live RGB equation and copy corresponding OpenGL calls in C++, Rust, or Python.
 - Use the controls with a keyboard or on a small screen.
 
 Images are decoded locally and never uploaded. The app has no backend, tracking, external fonts, or runtime CDN requests. Three.js r128 is bundled in `vendor/`, including its MIT license.
@@ -24,7 +24,19 @@ Images are decoded locally and never uploaded. The app has no backend, tracking,
 2. Use **Load image ↑** below either input preview to load your own image (up to 20 MB). Transparent PNGs make alpha behavior easier to see.
 3. Change the source opacity or click the arrow between the previews to swap the drawing order.
 4. Adjust a factor or equation to enter **Custom** mode. Minimum and maximum ignore factors, so those controls are disabled while either equation is active.
-5. Copy the OpenGL example or use **Save PNG** to export the result at the current preview resolution. **Reset all** restores the textures and settings.
+5. Choose **C++**, **Rust**, or **Python** under **Output language**, then copy the OpenGL example. Use **Save PNG** to export the result at the current preview resolution. **Reset all** restores the textures and settings while keeping your output language.
+
+### Code output languages
+
+The language selector generates the same blend state for three bindings:
+
+| Language | Binding                                                                         | Before using the snippet                                                                                                    |
+| -------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| C++      | Native OpenGL calls                                                             | Create a current context and load OpenGL entry points using your application's loader.                                      |
+| Rust     | [`gl` crate](https://docs.rs/gl/latest/gl/)                                     | Create a current context and initialize `gl::load_with`. Calls are wrapped in `unsafe` with the context requirement stated. |
+| Python   | [PyOpenGL](https://pyopengl.sourceforge.net/documentation/pydoc/OpenGL.GL.html) | Install `PyOpenGL` and create a current context. The snippet includes `from OpenGL import GL`.                              |
+
+These are render-state snippets for an existing application, rather than complete programs. Draw the destination first with blending disabled, then apply the generated state before drawing the source. The opacity line is **GLSL fragment shader code**, shown as a comment in each language; apply it in your source shader. Changing languages preserves the blend settings, and **Copy code** copies the selected language.
 
 ## How blending works
 

@@ -86,6 +86,67 @@
   const notify = (message) => {
     $("message").textContent = message;
   };
+  function updateCode({
+    replacing,
+    equation,
+    src,
+    dst,
+    alphaSrc,
+    alphaDst,
+    opacity,
+  }) {
+    const language = $("code-language").value;
+    const python = language === "python";
+    const rust = language === "rust";
+    const comment = python ? "#" : "//";
+    const constant = (name) =>
+      rust ? `gl::${name.slice(3)}` : python ? `GL.${name}` : name;
+    const call = (name, args) =>
+      `${rust ? `gl::${name}` : python ? `GL.gl${name}` : `gl${name}`}(${args.join(", ")})${python ? "" : ";"}`;
+    const lines = [
+      `${comment} Draw destination with blending disabled first.`,
+      `${comment} Source fragment shader (GLSL): color.a *= ${opacity};`,
+    ];
+    if (python) lines.unshift("from OpenGL import GL", "");
+    if (rust)
+      lines.push(
+        "// SAFETY: A current OpenGL context and loaded functions are required.",
+        "unsafe {",
+      );
+    const indent = rust ? "    " : "";
+    if (replacing) {
+      lines.push(indent + call("Disable", [constant("GL_BLEND")]));
+    } else {
+      lines.push(indent + call("Enable", [constant("GL_BLEND")]));
+      lines.push(
+        indent +
+          call("BlendEquationSeparate", [
+            constant(equation),
+            constant(equation),
+          ]),
+      );
+      const functionName = rust
+        ? "gl::BlendFuncSeparate"
+        : python
+          ? "GL.glBlendFuncSeparate"
+          : "glBlendFuncSeparate";
+      lines.push(
+        `${indent}${functionName}(`,
+        `${indent}  ${constant(src)}, ${constant(dst)}, ${comment} RGB`,
+        `${indent}  ${constant(alphaSrc)}, ${constant(alphaDst)}  ${comment} alpha`,
+        `${indent})${python ? "" : ";"}`,
+      );
+    }
+    if (rust) lines.push("}");
+    $("code").textContent = lines.join("\n");
+    $("code").className = `language-${language === "cpp" ? "cpp" : language}`;
+    $("code-note").textContent = {
+      cpp: "Native OpenGL calls. Requires a current context and loaded OpenGL functions. Apply after drawing the destination.",
+      rust: "Uses the gl crate. Create a current context and initialize gl::load_with before calling. Apply after drawing the destination.",
+      python:
+        "Uses PyOpenGL (pip install PyOpenGL). Requires a current OpenGL context. Apply after drawing the destination.",
+    }[language];
+  }
   function render() {
     if (renderer && layers.source && layers.destination && !contextLost)
       renderer.render(scene, camera);
@@ -150,11 +211,15 @@
     $("equation-note").textContent =
       `S = source color, D = destination color, α = alpha. Source alpha is multiplied by opacity (${$("opacity").value}%). RGB values are clamped to [0, 1].`;
     const opacity = (Number($("opacity").value) / 100).toFixed(2);
-    $("code").textContent =
-      `// Draw destination with blending disabled first.\n// Source fragment shader: color.a *= ${opacity};\n` +
-      (replacing
-        ? "glDisable(GL_BLEND);"
-        : `glEnable(GL_BLEND);\nglBlendEquationSeparate(${glEquation}, ${glEquation});\nglBlendFuncSeparate(\n  ${glFactor(src)}, ${glFactor(dst)}, // RGB\n  ${glFactor(alphaSrc)}, ${glFactor(alphaDst)}  // alpha\n);`);
+    updateCode({
+      replacing,
+      equation: glEquation,
+      src: glFactor(src),
+      dst: glFactor(dst),
+      alphaSrc: glFactor(alphaSrc),
+      alphaDst: glFactor(alphaDst),
+      opacity,
+    });
     if (renderer) {
       sourceMaterial.blending = replacing
         ? THREE.NoBlending
@@ -234,6 +299,7 @@
     });
   for (const id of ["opacity", "background"])
     $(id).addEventListener("input", update);
+  $("code-language").addEventListener("change", update);
   $("copy").addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText($("code").textContent);

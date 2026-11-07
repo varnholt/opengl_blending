@@ -412,6 +412,9 @@ input[type="color"] {
   color: var(--muted);
   font-weight: 500;
 }
+.code-panel #code-note {
+  margin: 12px 0 16px;
+}
 pre {
   margin: 0;
   overflow: auto;
