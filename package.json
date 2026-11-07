@@ -1,0 +1,12 @@
+{
+  "name": "opengl-blending",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A visual playground for OpenGL blending",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
