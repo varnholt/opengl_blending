@@ -65,13 +65,21 @@ test("uploaded textures produce correct blend pixels and export", async ({
       }, color),
       "base64",
     );
-  await page.locator("#source-file").setInputFiles({
+  const sourcePicker = page.waitForEvent("filechooser");
+  await page.getByLabel("Load custom source texture").click();
+  await (
+    await sourcePicker
+  ).setFiles({
     name: "source.png",
     mimeType: "image/png",
     buffer: await png("rgba(200, 0, 0, 0.5)"),
   });
   await expect(page.locator("#source-name")).toHaveText("source.png");
-  await page.locator("#destination-file").setInputFiles({
+  const destinationPicker = page.waitForEvent("filechooser");
+  await page.getByLabel("Load custom destination texture").click();
+  await (
+    await destinationPicker
+  ).setFiles({
     name: "destination.png",
     mimeType: "image/png",
     buffer: await png("rgb(0, 100, 0)"),

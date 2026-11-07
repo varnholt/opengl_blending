@@ -21,7 +21,7 @@ Images are decoded locally and never uploaded. The app has no backend, tracking,
 ## Try it
 
 1. Open the playground and choose **Additive** to combine the bundled light textures. The default **Normal / alpha** preset is most useful with a transparent source image.
-2. Use **Replace** below either input preview to load your own image (up to 20 MB). Transparent PNGs make alpha behavior easier to see.
+2. Use **Load image ↑** below either input preview to load your own image (up to 20 MB). Transparent PNGs make alpha behavior easier to see.
 3. Change the source opacity or click the arrow between the previews to swap the drawing order.
 4. Adjust a factor or equation to enter **Custom** mode. Minimum and maximum ignore factors, so those controls are disabled while either equation is active.
 5. Copy the OpenGL example or use **Save PNG** to export the result at the current preview resolution. **Reset all** restores the textures and settings.
